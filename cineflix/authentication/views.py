@@ -62,7 +62,7 @@ class LoginView(View):
         data={'form':form,'error':error}
 
         return render(request,self.template,context=data)
-@method_decorator(permitted_user_roles(['Admin']),name='dispatch')    
+   
 class LogOutView(View):
 
     def get(self,request,*args,**kwargs):
