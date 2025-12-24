@@ -12,6 +12,9 @@ from cineflix.utils import generate_password,generate_otp,send_otp,send_email
 
 from .models import OTP
 
+
+from django.contrib import messages
+
 from django.utils import timezone
 
 import threading
@@ -55,11 +58,15 @@ class LoginView(View):
 
                 login(request,user) 
 
+                messages.success(request,'Login Successfully')
+
                 return redirect('home')
             
             error = 'Invalid username or password'
         
         data={'form':form,'error':error}
+
+        messages.error(request,'Login Failed')
 
         return render(request,self.template,context=data)
    
@@ -68,6 +75,8 @@ class LogOutView(View):
     def get(self,request,*args,**kwargs):
 
         logout(request)
+
+        messages.success(request,'Logout successfully')
 
         return redirect('home')
     

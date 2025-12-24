@@ -7,3 +7,4 @@ def display_time(time):
 
 
     return f'{time.hour}h {time.minute}m'
+

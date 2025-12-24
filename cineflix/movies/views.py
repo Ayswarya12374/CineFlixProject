@@ -13,6 +13,12 @@ from django.utils.decorators import method_decorator
 
 from authentication.permissions import permitted_user_roles
 
+from cineflix.utils import get_recommended_movies
+
+from subscriptions.models import UserSubscriptions
+
+from django.contrib import messages
+
 class HomeView(View):
 
     template='home.html'
@@ -147,13 +153,17 @@ class MoviewCreateView(View):
 
         if form.is_valid() :
 
-            form.save()                    
+            form.save()         
+
+            messages.success(request,'Movie Created Successfully')           
             
             return redirect('movie-list')
       
         
         data={'form':form,'page':'Create Movie'}
         
+        messages.error(request,'Movie Creation Failure')
+
         return render(request,self.template,context=data)
   # implementing with id  
 # class MovieDetailsView(View):
@@ -180,7 +190,9 @@ class MovieDetailsView(View):
 
         movie=Movie.objects.get(uuid=uuid)
 
-        data={'movie':movie,'page':movie.name}
+        recommended_movies=get_recommended_movies(movie)
+
+        data={'movie':movie,'page':movie.name,'recommended_movies':recommended_movies}
 
         return render(request,self.template,context=data)
     
@@ -217,15 +229,19 @@ class MovieEditView(View):
 
             form.save()
 
+            messages.success(request,'Movie Edited Successfully')
+
             return redirect('movie-details',uuid=uuid)
         
         data={'form':form,'page':movie.name}
+
+        
 
         return render(request,self.template,context=data)
     
 class MovieDeleteView(View):
 
-    def get(self,*args,**kwargs):
+    def get(self,request,*args,**kwargs):
 
          uuid=kwargs.get('uuid')
 
@@ -238,7 +254,45 @@ class MovieDeleteView(View):
 
          movie.save()
 
+         messages.success(request,'Movie Deleted Successfully')
+
          return redirect('movie-list')    
+@method_decorator(permitted_user_roles(['User']),name='dispatch')      
+class PlayMovie(View):
+    template='movies/movie-play.html'
+    def get(self,request,*args,**kwargs):
+
+        user=request.user
+
+        try:
+
+           plan=UserSubscriptions.objects.filter(profile=user,active=True).latest('created_at')
+
+         
+        except:
+    
+          pass
+
+        if plan:
+
+            uuid=kwargs.get('uuid')
+
+            movie=Movie.objects.get(uuid=uuid)
+
+            data={'movie':movie}
+
+            return render(request,self.template,context=data)
+        
+        else:
+
+            messages.error(request,'you must subscribe a plan before watching')
+
+            return render('subscription-list')
+        
+
+        
+
+
 
         
     

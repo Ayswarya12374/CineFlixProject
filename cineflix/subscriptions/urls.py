@@ -5,5 +5,6 @@ from .import views
 urlpatterns=[
 
     path('subscription-list/',views.SubscriptionsView.as_view(),name='subscription-list'),
-
+    path('subscription-create/',views.SubscriptionCreateView.as_view(),name='subscription-create'),
+    path('subscription-delete/<str:uuid>/',views.SubscriptionDeleteView.as_view(),name='subscription-delete'),
 ]

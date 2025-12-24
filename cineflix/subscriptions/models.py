@@ -9,27 +9,25 @@ class DeviceChoices(models.TextChoices):
     
     ALL='All Devices','All Devices'
     
-    PHONE='Phone','Phone'
+    PHONE='phone','Phone'
 
-    TABLET='Tablet','Tablet'
+    TABLET='tablet','Tablet'
 
-    TV='Tv','Tv'
+    TV='tv','Tv'
 
-    LAPTOP='Laptop','Laptop'
+    LAPTOP='laptop','Laptop'
 
 class QualityChoices(models.TextChoices):
 
-    P480='480p','480p'    
-    P1080='Upto 1080p','Upto 1080p'    
-    P4K='Upto 4k','Upto 4k'
+    P480 = '480p', '480p'
+    P1080 = '1080p', 'Up to 1080p'
+    P4K = '4k', 'Up to 4K'
 
 class ScreenOrDownloadDeviceChoices(models.IntegerChoices):
 
-    ONE=1,'1'
-
-    TWO=2,'2'
-
-    FOUR=4,'4'
+    ONE = 1, '1'
+    TWO = 2, '2'
+    FOUR = 4, '4'
 
 
 
@@ -40,7 +38,7 @@ class SubscriptionPlans(BaseClass):
 
     amount=models.FloatField()
 
-    devices=models.CharField(choices=DeviceChoices.choices)
+    devices=MultiSelectField(choices=DeviceChoices.choices)
 
     quality=models.CharField(max_length=30,choices=QualityChoices.choices)
 
@@ -57,3 +55,27 @@ class SubscriptionPlans(BaseClass):
     def __str__(self) :
          
          return self.name
+    
+
+class UserSubscriptions(BaseClass):
+
+    profile=models.ForeignKey('authentication.profile',on_delete=models.CASCADE)
+
+    plan=models.ForeignKey('SubscriptionPlans',on_delete=models.CASCADE)
+
+    start_date=models.DateTimeField(null=True,blank=True)
+    end_date=models.DateTimeField(null=True,blank=True)
+
+    active=models.BooleanField(default=False)
+
+    class Meta:
+        
+        verbose_name='User Subscription'
+
+        verbose_name_plural='User Subscription'
+
+    def __str__(self):
+         
+         return f'{self.profile.username}-{self.plan.name}'   
+    
+    

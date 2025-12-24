@@ -28,6 +28,8 @@ urlpatterns = [
     path('',include('authentication.urls')),
 
     path('',include('subscriptions.urls')),
+    
+    path('',include('payments.urls')),
 
 
 ]
